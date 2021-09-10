@@ -8,18 +8,21 @@ class Starter
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
     static void OnBeforeSceneLoadRuntimeMethod()
     {
-        Debug.Log("Before first Scene loaded");
+        // Debug.Log("Before first Scene loaded");
+
     }
 
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
     static void OnAfterSceneLoadRuntimeMethod()
     {
         // Debug.Log("After first Scene loaded");
+        Map.Instance.Create();
     }
 
     [RuntimeInitializeOnLoadMethod]
     static void OnRuntimeMethodLoad()
     {
         // Debug.Log("RuntimeMethodLoad: After first Scene loaded");
+
     }
 }
