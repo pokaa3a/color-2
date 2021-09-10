@@ -36,19 +36,19 @@ public class Tile
         SpriteRenderer sprRend = gameObject.GetComponent<SpriteRenderer>() as SpriteRenderer;
         if (color == Color.Empty)
         {
-            sprRend.sprite = Resources.Load<Sprite>("Sprites/tile/tile_empty");
+            sprRend.sprite = Resources.Load<Sprite>(SpritePath.Tile.empty);
         }
         else if (color == Color.Red)
         {
-            sprRend.sprite = Resources.Load<Sprite>("Sprites/tile/tile_red");
+            sprRend.sprite = Resources.Load<Sprite>(SpritePath.Tile.red);
         }
         else if (color == Color.Yellow)
         {
-            sprRend.sprite = Resources.Load<Sprite>("Sprites/tile/tile_yellow");
+            sprRend.sprite = Resources.Load<Sprite>(SpritePath.Tile.yellow);
         }
         else if (color == Color.Blue)
         {
-            sprRend.sprite = Resources.Load<Sprite>("Sprites/tile/tile_blue");
+            sprRend.sprite = Resources.Load<Sprite>(SpritePath.Tile.blue);
         }
         else
         {

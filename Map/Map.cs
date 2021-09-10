@@ -78,11 +78,6 @@ public class Map
         xyS = new Vector2(xC, yS);
         xyW = new Vector2(xW, yC);
         xyE = new Vector2(xE, yC);
-
-        Debug.Log($"N: {xyN}");
-        Debug.Log($"S: {xyS}");
-        Debug.Log($"W: {xyW}");
-        Debug.Log($"E: {xyE}");
     }
 
     public void Create()
@@ -112,19 +107,10 @@ public class Map
         Func<Vector2, Vector2, Vector2, bool> lineSign = (xy, xy1, xy2) =>
             (xy2.y - xy1.y) * xy.x - (xy2.x - xy1.x) * xy.y +
             (xy2.x - xy1.x) * xy1.y - (xy2.y - xy1.y) * xy1.x > 0f;
-
-        Debug.Log($"InsideMap xy: {xy}");
-
         bool sign1 = lineSign(xy, xyW, xyN);
         bool sign2 = lineSign(xy, xyS, xyE);
-
-        Debug.Log($"sign1: {sign1}, sign2: {sign2}");
-
         bool sign3 = lineSign(xy, xyS, xyW);
         bool sign4 = lineSign(xy, xyE, xyN);
-
-        Debug.Log($"sign3: {sign3}, sign4: {sign4}");
-
         return sign1 != sign2 && sign3 != sign4;
     }
 
@@ -172,11 +158,34 @@ public class Map
 
     public Vector2 RCtoXY(Vector2Int rc)
     {
-        Assert.IsTrue(InsideMap(rc));
+        Assert.IsTrue(InsideMap(rc), $"rc = {rc}");
 
         float x = (rc.x + rc.y) * tileWH.x / 2f;
         float y = (rc.y - rc.x) * tileWH.y / 2f;
         return xyW + new Vector2(x, y) + new Vector2(tileWH.x / 2f, 0f);
     }
 
+    public void InitializeTowers()
+    {
+        Tower tower1 = AddObject<Tower>(new Vector2Int(0, 1));
+        mapObjects.Add(tower1);
+
+        Tower tower2 = AddObject<Tower>(new Vector2Int(0, 3));
+        mapObjects.Add(tower2);
+    }
+
+    public T AddObject<T>(Vector2Int rc) where T : MapObject, new()
+    {
+        return GetTile(rc).AddObject<T>() as T;
+    }
+
+    public void RemoveObject<T>(Vector2Int rc)
+    {
+        GetTile(rc).RemoveObject<T>();
+    }
+
+    public bool IsEmpty(Vector2Int rc)
+    {
+        return GetTile(rc).IsEmpty();
+    }
 }
