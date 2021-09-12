@@ -18,7 +18,8 @@ public class ActionDrawColor : Action
 
         if (Map.Instance.InsideMap(xy))
         {
-            Map.Instance.SetTileColor(xy, color);
+            Vector2Int rc = Map.Instance.XYtoRC(xy);
+            Map.Instance.GetTile(rc).SetColor(color);
             return true;
         }
 

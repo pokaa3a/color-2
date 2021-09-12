@@ -13,6 +13,7 @@ public class SpritePath
             public const string drawRed = "Sprites/card/small/draw_red";
             public const string drawYellow = "Sprites/card/small/draw_yellow";
             public const string drawBlue = "Sprites/card/small/draw_blue";
+            public const string attack = "Sprites/card/small/attack";
         }
 
         public class Big
@@ -21,6 +22,7 @@ public class SpritePath
             public const string drawRed = "Sprites/card/big/draw_red";
             public const string drawYellow = "Sprites/card/big/draw_yellow";
             public const string drawBlue = "Sprites/card/big/draw_blue";
+            public const string attack = "Sprites/card/big/attack";
         }
     }
 

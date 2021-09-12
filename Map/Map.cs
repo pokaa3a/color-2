@@ -91,12 +91,6 @@ public class Map
         }
     }
 
-    public void SetTileColor(Vector2 xy, Color color)
-    {
-        Vector2Int rc = XYtoRC(xy);
-        GetTile(rc).SetColor(color);
-    }
-
     public Tile GetTile(Vector2Int rc)
     {
         return tiles[rc.x * rows + rc.y];
@@ -179,9 +173,17 @@ public class Map
         return GetTile(rc).AddObject<T>() as T;
     }
 
-    public void RemoveObject<T>(Vector2Int rc)
+    public void DestroyObject<T>(Vector2Int rc) where T : MapObject, new()
     {
-        GetTile(rc).RemoveObject<T>();
+        GetTile(rc).DestroyObject<T>();
+    }
+
+    public void MoveObject<T>(Vector2Int rcFrom, Vector2Int rcTo) where T : MapObject, new()
+    {
+        MapObject obj = (MapObject)GetTile(rcFrom).RemoveObject<T>();
+        Assert.IsNotNull(obj);
+        GetTile(rcTo).InsertObject(obj);
+        obj.SetPosition(rcTo);
     }
 
     public bool IsEmpty(Vector2Int rc)

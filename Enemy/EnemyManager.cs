@@ -28,8 +28,10 @@ public class EnemyManager
 
     public void Create()
     {
-        Enemy minion = new Enemy(new Vector2Int(3, 5));
+        Vector2Int rc = new Vector2Int(3, 5);
+        Enemy minion = Map.Instance.AddObject<Enemy>(rc);
         enemies.Add(minion);
+        // minion.SetPosition(rc);
     }
 
     public void StartTurn()

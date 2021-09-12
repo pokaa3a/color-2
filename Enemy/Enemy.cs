@@ -30,7 +30,10 @@ public class Enemy : MapObject
     }
     private TextMesh lifeText;
 
-    public Enemy() { }
+    public Enemy()
+    {
+
+    }
 
     public Enemy(Vector2Int rc) : base(rc)
     {
@@ -40,7 +43,6 @@ public class Enemy : MapObject
             Map.Instance.tileWH.x * 0.7f,
             Map.Instance.tileWH.y * 0.7f);
 
-        this.rc = rc;
         this.spritePath = SpritePath.Enemy.minion;
 
         // Set up life text
@@ -132,14 +134,15 @@ public class Enemy : MapObject
         // Move
         for (int i = 0; i < rcMove.Count; ++i)
         {
-            rc = rcMove[i];
+            // rc = rcMove[i];
+            Map.Instance.MoveObject<Enemy>(rc, rcMove[i]);
             yield return new WaitForSeconds(0.2f);
         }
 
         // Erase path
         for (int i = 0; i < rcMove.Count; ++i)
         {
-            Map.Instance.RemoveObject<Effect>(rcMove[i]);
+            Map.Instance.DestroyObject<Effect>(rcMove[i]);
         }
         yield return new WaitForSeconds(0.5f);
 
@@ -153,13 +156,18 @@ public class Enemy : MapObject
 
     private IEnumerator Attack()
     {
-        Map.Instance.RemoveObject<Effect>(rcAttack);
+        Map.Instance.DestroyObject<Effect>(rcAttack);
         var attackEffect = Map.Instance.AddObject<Effect>(rcAttack);
         attackEffect.spritePath = SpritePath.Effect.attack;
 
         yield return new WaitForSeconds(1f);
-        Map.Instance.RemoveObject<Effect>(rcAttack);
+        Map.Instance.DestroyObject<Effect>(rcAttack);
 
         rcAttack = new Vector2Int(-1, -1);
+    }
+
+    public void BeAttacked(int attack)
+    {
+        life = life < attack ? 0 : life - attack;
     }
 }

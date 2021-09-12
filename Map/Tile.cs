@@ -61,25 +61,55 @@ public class Tile
             srpiteWh.y / sprRend.size.y);
     }
 
+    public T GetObject<T>() where T : MapObject, new()
+    {
+        foreach (MapObject obj in objects)
+        {
+            if (obj is T)
+            {
+                return (T)obj;
+            }
+        }
+        return null;
+    }
+
+    // Create new object
     public T AddObject<T>() where T : MapObject, new()
     {
         T newObject = System.Activator.CreateInstance(typeof(T), rc) as T;
-        objects.Add((MapObject)newObject);
+        InsertObject(newObject);
         return newObject;
     }
 
-    public void RemoveObject<T>()
+    // Insert an existing object
+    public void InsertObject(MapObject obj)
     {
-        for (int i = 0; i < objects.Count; ++i)
+        objects.Add(obj);
+        obj.rc = rc;
+    }
+
+    // Destroy object
+    public void DestroyObject<T>() where T : MapObject, new()
+    {
+        MapObject obj = (MapObject)GetObject<T>();
+        if (obj == null)
         {
-            MapObject obj = objects[i];
-            if (obj is T)
-            {
-                objects.Remove(obj);
-                obj.component.CallDestroy();
-                return;
-            }
+            return;
         }
+        objects.Remove(obj);
+        obj.component.CallDestroy();
+    }
+
+    // Remove an object from the tile
+    public T RemoveObject<T>() where T : MapObject, new()
+    {
+        MapObject obj = (MapObject)GetObject<T>();
+        if (obj == null)
+        {
+            return null;
+        }
+        objects.Remove(obj);
+        return (T)obj;
     }
 
     public bool IsEmpty()

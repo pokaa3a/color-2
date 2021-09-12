@@ -65,6 +65,8 @@ public class CardManager
         cards.Add(cardBlue);
         CardDrawColor cardYellow = new CardDrawColor(Color.Yellow);
         cards.Add(cardYellow);
+        CardAttack cardAttack = new CardAttack();
+        cards.Add(cardAttack);
     }
 
     public void LongPressCard(Card card)

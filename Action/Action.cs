@@ -16,5 +16,6 @@ public abstract class Action
 
     }
 
+    // Called if touching
     public abstract bool Act(Vector2 xy);
 }

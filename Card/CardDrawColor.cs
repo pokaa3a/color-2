@@ -6,7 +6,7 @@ public class CardDrawColor : Card
 {
     public CardDrawColor(Color color) : base()
     {
-        // Card sprite
+        // Sprite
         if (color == Color.Red)
         {
             spritePath = SpritePath.Card.Small.drawRed;
