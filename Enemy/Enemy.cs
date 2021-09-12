@@ -17,6 +17,19 @@ public class Enemy : MapObject
     }
     private Vector2Int rcAttack = new Vector2Int(-1, -1);
 
+    private int maxLife = 5;
+    private int _life = 5;
+    private int life
+    {
+        get => _life;
+        set
+        {
+            _life = value;
+            lifeText.text = $"{_life}/{maxLife}";
+        }
+    }
+    private TextMesh lifeText;
+
     public Enemy() { }
 
     public Enemy(Vector2Int rc) : base(rc)
@@ -27,10 +40,19 @@ public class Enemy : MapObject
             Map.Instance.tileWH.x * 0.7f,
             Map.Instance.tileWH.y * 0.7f);
 
-        SetPosition(rc);
+        this.rc = rc;
+        this.spritePath = SpritePath.Enemy.minion;
 
-        spritePath = SpritePath.Enemy.minion;
-        SetSprite(this.spritePath);
+        // Set up life text
+        GameObject textObject = new GameObject("leftText");
+        textObject.transform.SetParent(this.gameObject.transform);
+        lifeText = textObject.AddComponent<TextMesh>() as TextMesh;
+        textObject.transform.localPosition = new Vector2(0f, 0.7f);
+        textObject.transform.localScale = new Vector2(0.04f, 0.08f);
+        lifeText.fontSize = 100;
+        lifeText.text = $"{life}/{maxLife}";
+        lifeText.anchor = TextAnchor.MiddleCenter;
+        lifeText.color = new Color32(255, 100, 0, 255);   // red
     }
 
     public void Act()
