@@ -14,6 +14,8 @@ public class SpritePath
             public const string drawYellow = "Sprites/card/small/draw_yellow";
             public const string drawBlue = "Sprites/card/small/draw_blue";
             public const string attack = "Sprites/card/small/attack";
+            public const string attackConnected = "Sprites/card/small/attack_connected";
+            public const string attackSameColor = "Sprites/card/small/attack_same_color";
         }
 
         public class Big
@@ -23,6 +25,8 @@ public class SpritePath
             public const string drawYellow = "Sprites/card/big/draw_yellow";
             public const string drawBlue = "Sprites/card/big/draw_blue";
             public const string attack = "Sprites/card/big/attack";
+            public const string attackConnected = "Sprites/card/big/attack_connected";
+            public const string attackSameColor = "Sprites/card/big/attack_same_color";
         }
     }
 

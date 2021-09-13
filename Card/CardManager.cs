@@ -5,8 +5,9 @@ using UnityEngine.Assertions;
 
 public class CardManager
 {
-    private const int maxNumCards = 5;
+    private const int maxNumCards = 10;
 
+    public Card selectedCard = null;
     private List<CardHolder> cardHolders = new List<CardHolder>();
     private List<Card> cards = new List<Card>();
     private BigCardHolder bigCardHolder;
@@ -59,14 +60,24 @@ public class CardManager
     {
         cards.Clear();
 
+        // 0
         CardDrawColor cardRed = new CardDrawColor(Color.Red);
         cards.Add(cardRed);
+        // 1
         CardDrawColor cardBlue = new CardDrawColor(Color.Blue);
         cards.Add(cardBlue);
+        // 2
         CardDrawColor cardYellow = new CardDrawColor(Color.Yellow);
         cards.Add(cardYellow);
+        // 3
         CardAttack cardAttack = new CardAttack();
         cards.Add(cardAttack);
+        // 4
+        CardAttackSameColor cardAttackSameColor = new CardAttackSameColor();
+        cards.Add(cardAttackSameColor);
+        // 5
+        CardAttackConnected cardAttackConnected = new CardAttackConnected();
+        cards.Add(cardAttackConnected);
     }
 
     public void LongPressCard(Card card)
@@ -81,5 +92,19 @@ public class CardManager
     public void StopLongPressCard()
     {
         bigCardHolder.enabled = false;
+    }
+
+    public void Act(Vector2 xy)
+    {
+        if (selectedCard == null)
+        {
+            return;
+        }
+
+        if (selectedCard.Act(xy))
+        {
+            // actions of this card have finished
+            selectedCard = null;
+        }
     }
 }

@@ -63,8 +63,7 @@ public class Enemy : MapObject
         {
             component.CallStartCoroutine(Attack());
         }
-
-        component.CallStartCoroutine(PlanNextAction());
+        Map.Instance.GetTile(rc).CallStartCoroutine(PlanNextAction());
     }
 
     private IEnumerator PlanNextAction()

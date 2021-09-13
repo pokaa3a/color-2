@@ -4,8 +4,14 @@ using UnityEngine;
 
 public class CardDrawColor : Card
 {
+    public Color color { get; protected set; }
+    private const int maxNumDrawings = 10;
+    private int numDrawings = 0;
+
     public CardDrawColor(Color color) : base()
     {
+        this.color = color;
+
         // Sprite
         if (color == Color.Red)
         {
@@ -22,8 +28,19 @@ public class CardDrawColor : Card
             spritePath = SpritePath.Card.Small.drawYellow;
             bigSpritePath = SpritePath.Card.Big.drawYellow;
         }
+    }
 
-        // Action
-        action = new ActionDrawColor(color);
+    public override bool Act(Vector2 xy)
+    {
+        if (Map.Instance.InsideMap(xy) && numDrawings < maxNumDrawings)
+        {
+            Vector2Int rc = Map.Instance.XYtoRC(xy);
+            Map.Instance.GetTile(rc).SetColor(color);
+            if (++numDrawings == maxNumDrawings)
+            {
+                return true;
+            }
+        }
+        return false;
     }
 }

@@ -13,6 +13,21 @@ public class Tile
     private GameObject gameObject;
     private List<MapObject> objects;
 
+    public TileComponent component { get; protected set; }
+
+    public class TileComponent : MonoBehaviour
+    {
+        public void CallStartCoroutine(IEnumerator iEnum)
+        {
+            StartCoroutine(iEnum);
+        }
+
+        public void CallDestroy()
+        {
+            Destroy(gameObject);
+        }
+    }
+
     public Tile(Vector2Int rc, Vector2 wh)
     {
         gameObject = new GameObject($"tile_{rc.x}_{rc.y}");
@@ -20,6 +35,8 @@ public class Tile
 
         this.rc = rc;
         this.srpiteWh = Map.Instance.tileWH;
+
+        component = gameObject.AddComponent<TileComponent>() as TileComponent;
 
         // Position
         Vector2 xy = Map.Instance.RCtoXY(rc);
@@ -115,5 +132,10 @@ public class Tile
     public bool IsEmpty()
     {
         return objects.Count == 0;
+    }
+
+    public void CallStartCoroutine(IEnumerator iEnum)
+    {
+        component.CallStartCoroutine(iEnum);
     }
 }
