@@ -31,11 +31,16 @@ public class EnemyManager
         Vector2Int rc = new Vector2Int(3, 5);
         Enemy minion = Map.Instance.AddObject<Enemy>(rc);
         enemies.Add(minion);
-        // minion.SetPosition(rc);
     }
 
     public void StartTurn()
     {
+        if (enemies.Count == 0)
+        {
+            TurnHandler.Instance.SwitchTurn();
+            return;
+        }
+
         numActionsCompleted = 0;
         foreach (Enemy e in enemies)
         {
@@ -50,5 +55,10 @@ public class EnemyManager
         {
             TurnHandler.Instance.SwitchTurn();
         }
+    }
+
+    public void KillEnemy(Enemy enemy)
+    {
+        enemies.Remove(enemy);
     }
 }

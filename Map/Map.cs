@@ -190,4 +190,9 @@ public class Map
     {
         return GetTile(rc).IsEmpty();
     }
+
+    public void TowerCollapse(Tower tower)
+    {
+        mapObjects.Remove(tower);
+    }
 }

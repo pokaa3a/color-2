@@ -59,10 +59,7 @@ public class Enemy : MapObject
 
     public void Act()
     {
-        if (Map.Instance.InsideMap(rcAttack))
-        {
-            component.CallStartCoroutine(Attack());
-        }
+        component.CallStartCoroutine(Attack());
         Map.Instance.GetTile(rc).CallStartCoroutine(PlanNextAction());
     }
 
@@ -177,6 +174,12 @@ public class Enemy : MapObject
             var attackEffect = Map.Instance.AddObject<Effect>(rcAttack);
             attackEffect.spritePath = SpritePath.Effect.attack;
 
+            Tower tower = Map.Instance.GetTile(rcAttack).GetObject<Tower>();
+            if (tower != null)
+            {
+                tower.BeAttacked(1);
+            }
+
             yield return new WaitForSeconds(1f);
             Map.Instance.DestroyObject<Effect>(rcAttack);
             rcAttack = new Vector2Int(-1, -1);
@@ -184,8 +187,18 @@ public class Enemy : MapObject
         yield return null;
     }
 
-    public void BeAttacked(int attack)
+    public void BeAttacked(int attackAmount)
     {
-        life = life < attack ? 0 : life - attack;
+        life = Mathf.Max(life - attackAmount, 0);
+        if (life == 0)
+        {
+            Die();
+        }
+    }
+
+    private void Die()
+    {
+        Map.Instance.GetTile(rc).DestroyObject<Enemy>();
+        EnemyManager.Instance.KillEnemy(this);
     }
 }

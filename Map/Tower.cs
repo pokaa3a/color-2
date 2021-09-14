@@ -42,4 +42,19 @@ public class Tower : MapObject
         lifeText.anchor = TextAnchor.MiddleCenter;
         lifeText.color = new Color32(0, 255, 50, 255);   // red
     }
+
+    public void BeAttacked(int attackAmount)
+    {
+        life = Mathf.Max(life - attackAmount, 0);
+        if (life == 0)
+        {
+            Collapse();
+        }
+    }
+
+    private void Collapse()
+    {
+        Map.Instance.GetTile(rc).DestroyObject<Tower>();
+        Map.Instance.TowerCollapse(this);
+    }
 }
