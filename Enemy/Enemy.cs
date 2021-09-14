@@ -17,8 +17,8 @@ public class Enemy : MapObject
     }
     private Vector2Int rcAttack = new Vector2Int(-1, -1);
 
-    private int maxLife = 5;
-    private int _life = 5;
+    private const int maxLife = 5;
+    private int _life = maxLife;
     private int life
     {
         get => _life;
@@ -46,7 +46,7 @@ public class Enemy : MapObject
         this.spritePath = SpritePath.Enemy.minion;
 
         // Set up life text
-        GameObject textObject = new GameObject("leftText");
+        GameObject textObject = new GameObject("lifeText");
         textObject.transform.SetParent(this.gameObject.transform);
         lifeText = textObject.AddComponent<TextMesh>() as TextMesh;
         textObject.transform.localPosition = new Vector2(0f, 0.7f);
@@ -68,54 +68,68 @@ public class Enemy : MapObject
 
     private IEnumerator PlanNextAction()
     {
+        // this enemy has only one action
         Tuple<List<Vector2Int>, Vector2Int> moveAndAttack = PlanMoveAndAttack();
         return MoveThenAttemptToAttack(moveAndAttack.Item1, moveAndAttack.Item2);
     }
 
     private Tuple<List<Vector2Int>, Vector2Int> PlanMoveAndAttack()
     {
-        // Decide final position
-        Vector2Int rcMoveDst = rc;
-        for (int i = 0; i < 20; ++i)
+        // Look for closest tower
+        int closestDist = Map.rows * 100;
+        Vector2Int closestTowerRc = new Vector2Int(100, 100);
+        for (int r = 0; r < Map.rows; ++r)
         {
-            int r = UnityEngine.Random.Range(0, Map.rows);
-            int c = UnityEngine.Random.Range(0, Map.rows);
-            if (Map.Instance.IsEmpty(new Vector2Int(r, c)))
+            for (int c = 0; c < Map.rows; ++c)
             {
-                rcMoveDst = new Vector2Int(r, c);
-                break;
+                if (Map.Instance.GetTile(new Vector2Int(r, c)).GetObject<Tower>() != null)
+                {
+                    if (Math.Abs(r - rc.x) + Math.Abs(c - rc.y) < closestDist)
+                    {
+                        closestTowerRc = new Vector2Int(r, c);
+                        closestDist = Math.Abs(r - rc.x) + Math.Abs(c - rc.y);
+                    }
+                }
             }
         }
 
         // Path planning
-        List<Vector2Int> rcMove = new List<Vector2Int>();
-        for (int d = 1; d <= Math.Abs(rcMoveDst.x - rc.x); ++d)
+        const int maxSteps = 2;
+        List<Vector2Int> rcMoves = new List<Vector2Int>();
+        while (rcMoves.Count < maxSteps &&
+            Math.Abs(closestTowerRc.x - rc.x) + Math.Abs(closestTowerRc.y - rc.y) > 1)
         {
-            int x = rc.x + (rcMoveDst.x > rc.x ? d : -d);
-            int y = rc.y;
-            rcMove.Add(new Vector2Int(x, y));
-        }
-        int targetRow = rcMove.Count > 0 ? rcMove[rcMove.Count - 1].x : rc.x;
-        for (int d = 1; d <= Math.Abs(rcMoveDst.y - rc.y); ++d)
-        {
-            int x = targetRow;
-            int y = rc.y + (rcMoveDst.y > rc.y ? d : -d);
-            rcMove.Add(new Vector2Int(x, y));
-        }
+            Vector2Int lastRc = rcMoves.Count > 0 ? rcMoves[rcMoves.Count - 1] : rc;
 
-        // Decide where to attack
-        Vector2Int[] directions = { Vector2Int.up, Vector2Int.right, Vector2Int.down, Vector2Int.left };
-        Vector2Int rcAttackAttempt = rcMoveDst + Vector2Int.down;
-        for (int i = 0; i < 4; ++i)
-        {
-            if (Map.Instance.InsideMap(rcMoveDst + directions[i]))
+            if (Math.Abs(closestTowerRc.x - lastRc.x) > 0)
             {
-                rcAttackAttempt = rcMoveDst + directions[i];
-                break;
+                int r = lastRc.x + (closestTowerRc.x > lastRc.x ? 1 : -1);
+                int c = lastRc.y;
+                rcMoves.Add(new Vector2Int(r, c));
+            }
+            else
+            {
+                int r = lastRc.x;
+                int c = lastRc.y + (closestTowerRc.y > rc.y ? 1 : -1);
+                rcMoves.Add(new Vector2Int(r, c));
             }
         }
 
-        return new Tuple<List<Vector2Int>, Vector2Int>(rcMove, rcAttackAttempt);
+        // Decide where to attack
+        Vector2Int[] directions = {
+            Vector2Int.up, Vector2Int.right, Vector2Int.down, Vector2Int.left };
+        Vector2Int rcAttackAttempt = new Vector2Int(-1, -1);
+        Vector2Int dstRc = rcMoves.Count > 0 ? rcMoves[rcMoves.Count - 1] : rc;
+        for (int i = 0; i < 4; ++i)
+        {
+            Vector2Int maybeAttackAttempt = dstRc + directions[i];
+            if (maybeAttackAttempt == closestTowerRc)
+            {
+                rcAttackAttempt = maybeAttackAttempt;
+                break;
+            }
+        }
+        return new Tuple<List<Vector2Int>, Vector2Int>(rcMoves, rcAttackAttempt);
     }
 
     private IEnumerator MoveThenAttemptToAttack(List<Vector2Int> rcMove, Vector2Int rcAttackAttempt)
@@ -146,23 +160,28 @@ public class Enemy : MapObject
         yield return new WaitForSeconds(0.5f);
 
         // Draw attack attempt
-        var attackObj = Map.Instance.AddObject<Effect>(rcAttackAttempt);
-        attackObj.spritePath = SpritePath.Effect.attackAttempt;
-        rcAttack = rcAttackAttempt;
-
+        if (Map.Instance.InsideMap(rcAttackAttempt))
+        {
+            var attackObj = Map.Instance.AddObject<Effect>(rcAttackAttempt);
+            attackObj.spritePath = SpritePath.Effect.attackAttempt;
+            rcAttack = rcAttackAttempt;
+        }
         EnemyManager.Instance.OneActionCompleted();
     }
 
     private IEnumerator Attack()
     {
-        Map.Instance.DestroyObject<Effect>(rcAttack);
-        var attackEffect = Map.Instance.AddObject<Effect>(rcAttack);
-        attackEffect.spritePath = SpritePath.Effect.attack;
+        if (Map.Instance.InsideMap(rcAttack))
+        {
+            Map.Instance.DestroyObject<Effect>(rcAttack);
+            var attackEffect = Map.Instance.AddObject<Effect>(rcAttack);
+            attackEffect.spritePath = SpritePath.Effect.attack;
 
-        yield return new WaitForSeconds(1f);
-        Map.Instance.DestroyObject<Effect>(rcAttack);
-
-        rcAttack = new Vector2Int(-1, -1);
+            yield return new WaitForSeconds(1f);
+            Map.Instance.DestroyObject<Effect>(rcAttack);
+            rcAttack = new Vector2Int(-1, -1);
+        }
+        yield return null;
     }
 
     public void BeAttacked(int attack)

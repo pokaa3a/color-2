@@ -20,6 +20,7 @@ class Starter
         Map.Instance.InitializeTowers();
         EnemyManager.Instance.Create();
         CardManager.Instance.RefreshHandCards();
+        GameStatics.Instance.ComputeScore();
     }
 
     [RuntimeInitializeOnLoadMethod]

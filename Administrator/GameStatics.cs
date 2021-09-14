@@ -6,10 +6,19 @@ using UnityEngine.UI;
 // Record all the statics in the game
 public class GameStatics
 {
-    // [Public]
-    public int score { get; protected set; }
 
-    // [Private]
+    private int _score;
+    public int score
+    {
+        get => _score;
+        protected set
+        {
+            _score = value;
+            scoreText.text = $"{_score} / {winningScore}";
+        }
+    }
+
+    private const int winningScore = 20;
     private Text scoreText;
 
     // Singleton
@@ -29,6 +38,7 @@ public class GameStatics
     private GameStatics()
     {
         scoreText = GameObject.Find(ObjectPath.score).GetComponent<Text>() as Text;
+        score = 0;
     }
 
     public void ComputeScore()
@@ -43,6 +53,5 @@ public class GameStatics
                 }
             }
         }
-        scoreText.text = score.ToString();
     }
 }
