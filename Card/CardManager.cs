@@ -78,6 +78,9 @@ public class CardManager
         // 5
         CardAttackConnected cardAttackConnected = new CardAttackConnected();
         cards.Add(cardAttackConnected);
+        // 6
+        CardEraseColor cardEraseColor = new CardEraseColor();
+        cards.Add(cardEraseColor);
     }
 
     public void LongPressCard(Card card)

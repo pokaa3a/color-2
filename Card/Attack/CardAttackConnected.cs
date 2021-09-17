@@ -11,8 +11,6 @@ public class CardAttackConnected : Card
         // Sprite
         spritePath = SpritePath.Card.Small.attackConnected;
         bigSpritePath = SpritePath.Card.Big.attackConnected;
-
-        // Action
     }
 
     public override bool Act(Vector2 xy)
@@ -33,6 +31,12 @@ public class CardAttackConnected : Card
             seen.Add(rc);
             // play attack animation
             Map.Instance.GetTile(rc).CallStartCoroutine(AttackCoroutine(rc));
+            // attack enemy
+            Enemy enemy = Map.Instance.GetTile(rc).GetObject<Enemy>();
+            if (enemy != null)
+            {
+                enemy.BeAttacked(attackAmount);
+            }
 
             while (queue.Count > 0)
             {
@@ -55,10 +59,10 @@ public class CardAttackConnected : Card
                             Map.Instance.GetTile(nextRc).CallStartCoroutine(AttackCoroutine(nextRc));
 
                             // attack enemy
-                            Enemy enemy = Map.Instance.GetTile(nextRc).GetObject<Enemy>();
-                            if (enemy != null)
+                            Enemy e = Map.Instance.GetTile(nextRc).GetObject<Enemy>();
+                            if (e != null)
                             {
-                                enemy.BeAttacked(attackAmount);
+                                e.BeAttacked(attackAmount);
                             }
                         }
                     }
